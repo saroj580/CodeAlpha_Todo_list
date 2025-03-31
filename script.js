@@ -25,11 +25,11 @@ filterButtons.forEach(button => {
         filterButtons.forEach(btn => btn.classList.remove('active'));
         button.classList.add('active');
         currentFilter = button.dataset.filter;
-        renderTask();
+        renderTasks();
     })
 })
 
-function renderTask() {
+function renderTasks() {
     let filteredTasks = tasks;
     if (currentFilter === 'active') {
         filteredTasks = tasks.filter(task => !task.completed);
@@ -92,4 +92,49 @@ function renderTask() {
             `}
         </li>
     `).join('');
+}
+
+function addTask() {
+    const taskText = taskInput.value.trim();
+    const dueDate = dueDateInput.value;
+    const reminderMinutes = parseInt(reminderInput.value) || 0;
+    
+    if (taskText) {
+        const task = {
+            id: Date.now(),
+            test: taskText,
+            completed: false,
+            dueDate: dueDate || null,
+            reminderMinutes: reminderMinutes || 0,
+            createdAt: new Date().toString();
+        };
+        console.log('Adding task:', task); // Debug log
+        tasks.push(task);
+        saveTasks();
+        renderTasks();
+        
+        if (task.dueDate && task.reminderMinutes) {
+            setupReminder(task);
+        }
+        // Clear inputs
+        taskInput.value = '';
+        dueDateInput.value = '';
+        reminderInput.value = '';
+    }
+}
+
+function setupReminder(task) {
+    if (!task.dueDate || !task.reminderMinutes) return;
+
+    const dueDate = new Date(task.dueDate);
+    const reminderTime = new Date(dueDate.getTime() - task.reminderMinutes * 60000);
+    const now = new Date();
+
+    if (reminderTime > now) {
+        const timeoutId = setTimeout(() => {
+            showNotification(task);
+        }, reminderTime.getTime() - now.getTime());
+
+        reminderTimeouts.set(task.id, timeoutId);
+    }
 }
