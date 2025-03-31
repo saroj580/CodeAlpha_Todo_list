@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List App</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="todo-app">
+            <h2>Todo List <i class="fas fa-list"></i></h2>
+            <div class="input-section">
+                <div class="input-group">
+                    <input type="text" id="taskInput" placeholder="Add your task...">
+                    <div class="date-reminder-group">
+                        <input type="datetime-local" id="dueDate">
+                        <input type="number" id="reminderMinutes" placeholder="Reminder (mins)" min="0">
+                    </div>
+                </div>
+                <button id="addButton">Add</button>
+            </div>
+            <ul id="taskList">
+                <!-- Tasks will be added here dynamically -->
+            </ul>
+            <div class="filters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="active">Active</button>
+                <button class="filter-btn" data-filter="completed">Completed</button>
+                <button id="clearCompleted">Clear Completed</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 
