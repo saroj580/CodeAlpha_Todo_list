@@ -138,3 +138,37 @@ function setupReminder(task) {
         reminderTimeouts.set(task.id, timeoutId);
     }
 }
+
+function showNotification(task) {
+    if (!("Notification" in window)) {
+        alert(`Reminder: ${task.text}`);
+        return;
+    }
+
+    Notification.requestPermission().then(permission => {
+        if (permission === "granted") {
+            new Notification("Task Reminder", {
+                body: task.text,
+                icon: "https://example.com/icon.png"
+            });
+        } else {
+            alert(`Reminder: ${task.text}`);
+        }
+    });
+}
+
+function deleteTask(id) {
+    tasks = tasks.filter(task => task.id !== id);
+    const timeoutId = reminderTimeouts.get(id);
+    if (timeoutId) {
+        clearTimeout(timeoutId);
+        reminderTimeouts.delete(id);
+    }
+    saveTasks();
+    renderTasks();
+}
+
+function startEditing(id) {
+    editingTaskId = id;
+    renderTasks();
+}
