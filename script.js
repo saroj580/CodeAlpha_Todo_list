@@ -106,7 +106,7 @@ function addTask() {
             completed: false,
             dueDate: dueDate || null,
             reminderMinutes: reminderMinutes || 0,
-            createdAt: new Date().toString();
+            createdAt: new Date().toString()
         };
         console.log('Adding task:', task); // Debug log
         tasks.push(task);
@@ -258,3 +258,34 @@ function createNotification(task) {
 
     new Notification(notificationTitle, notificationOptions);
 }
+
+// Request notification permission when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    if ("Notification" in window && Notification.permission !== "granted") {
+        Notification.requestPermission();
+    }
+});
+
+function clearCompleted() {
+    tasks = tasks.filter(task => !task.completed);
+    saveTasks();
+    renderTasks();
+}
+
+function saveTasks() {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+function formatDate(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleString();
+}
+
+function isOverdue(dueDate, completed) {
+    if (!dueDate || completed) return false;
+    return new Date(dueDate) < new Date();
+}
+
+renderTasks();
+tasks.forEach(task => setupReminder(task));
