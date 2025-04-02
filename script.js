@@ -172,3 +172,89 @@ function startEditing(id) {
     editingTaskId = id;
     renderTasks();
 }
+
+function saveEdit(id) {
+    const editInput = document.querySelector(`#edit-${id}`);
+    const newText = editInput.value.trim();
+    const newDueDate = document.querySelector(`#edit-due-${id}`).value;
+    const newReminder = parseInt(document.querySelector(`#edit-reminder-${id}`).value) || 0;
+    
+    if (newText) {
+        tasks = tasks.map(task => {
+            if (task.id === id) {
+                const updatedTask = { 
+                    ...task, 
+                    text: newText,
+                    dueDate: newDueDate,
+                    reminderMinutes: newReminder
+                };
+                
+                // Clear existing reminder
+                const timeoutId = reminderTimeouts.get(id);
+                if (timeoutId) {
+                    clearTimeout(timeoutId);
+                    reminderTimeouts.delete(id);
+                }
+                
+                // Setup new reminder
+                setupReminder(updatedTask);
+                
+                return updatedTask;
+            }
+            return task;
+        });
+        saveTasks();
+        editingTaskId = null;
+        renderTasks();
+    }
+}
+
+function cancelEdit() {
+    editingTaskId = null;
+    renderTasks();
+}
+
+function toggleTask(id) {
+    tasks = tasks.map(task => {
+        if (task.id === id) {
+            const newCompleted = !task.completed;
+            if (newCompleted) {
+                showCompletionNotification(task);
+            }
+            return { ...task, completed: newCompleted };
+        }
+        return task;
+    });
+    saveTasks();
+    renderTasks();
+}
+
+function showCompletionNotification(task) {
+    // Check if browser supports notifications
+    if (!("Notification" in window)) {
+        return;
+    }
+
+    // Request permission if not granted
+    if (Notification.permission !== "granted") {
+        Notification.requestPermission().then(permission => {
+            if (permission === "granted") {
+                createNotification(task);
+            }
+        });
+    } else {
+        createNotification(task);
+    }
+}
+
+function createNotification(task) {
+    const notificationTitle = "Task Completed! 🎉";
+    const notificationOptions = {
+        body: `Congratulations! You've completed: ${task.text}`,
+        icon: "https://cdn-icons-png.flaticon.com/512/4697/4697260.png",
+        badge: "https://cdn-icons-png.flaticon.com/512/4697/4697260.png",
+        vibrate: [200, 100, 200],
+    };
+
+    new Notification(notificationTitle, notificationOptions);
+}
