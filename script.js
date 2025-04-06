@@ -102,7 +102,7 @@ function addTask() {
     if (taskText) {
         const task = {
             id: Date.now(),
-            test: taskText,
+            text: taskText,
             completed: false,
             dueDate: dueDate || null,
             reminderMinutes: reminderMinutes || 0,
